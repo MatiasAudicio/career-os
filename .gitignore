@@ -34,6 +34,9 @@ yarn-error.log*
 .env*
 !.env.example
 
+# symlinks locales generados por `npx skills add` (el contenido real está en .agents/skills)
+.claude/skills/
+
 # vercel
 .vercel
 
