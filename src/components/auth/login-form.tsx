@@ -91,13 +91,12 @@ export function LoginForm() {
 
   if (estado === "enviado") {
     return (
-      <Card>
+      <Card className="border-white/10 shadow-2xl shadow-black/20">
         <CardHeader className="text-center">
-          <MailCheck
-            className="mx-auto size-10 text-primary"
-            aria-hidden="true"
-          />
-          <CardTitle className="text-xl">Revisá tu correo</CardTitle>
+          <span className="mx-auto flex size-14 items-center justify-center rounded-2xl border border-primary/20 bg-accent">
+            <MailCheck className="size-6 text-primary" aria-hidden="true" />
+          </span>
+          <CardTitle className="pt-2 text-xl">Revisá tu correo</CardTitle>
           <CardDescription className="text-base">
             Te mandamos un enlace a <strong>{email}</strong>. Tocalo y entrás
             directo — sin contraseña.
@@ -119,7 +118,7 @@ export function LoginForm() {
   const enviando = estado === "enviando";
 
   return (
-    <Card>
+    <Card className="border-white/10 shadow-2xl shadow-black/20">
       <CardHeader>
         <CardTitle className="text-xl">
           {modo === "enlace" ? "Ingresá con tu correo" : "Ingresá con tu contraseña"}
@@ -173,7 +172,7 @@ export function LoginForm() {
           )}
           <Button
             type="submit"
-            className="h-11 w-full text-base"
+            className="glow-primary h-11 w-full text-base font-semibold"
             disabled={
               enviando ||
               email.trim() === "" ||

@@ -2,23 +2,27 @@
 
 > Decisiones de UX/UI. Toda pantalla nueva se valida contra este documento.
 
-## Personalidad
+## Personalidad (revisado 2026-07-06)
 
-Cálido, humano, esperanzador y calmo. El usuario probablemente está estresado o desmoralizado — la app debe bajar la ansiedad, no parecer un tablero corporativo. Anti-referencia: dashboards fríos azul-corporativo saturados de métricas.
+**Dark premium SaaS** — referencia Linear / Vercel / Raycast / Attio. El objetivo es doble: que un dev que mire el frontend quiera contratar a quien lo hizo, y que alguien no técnico lo sienta profesional y confiable (no frío). Se logra con calidez en el *copy* y la honestidad del producto, no con colores pasteles. Anti-referencia: la versión anterior "stone + teal cálido" quedó descartada por sentirse genérica/"HTML 2005".
+
+- **Tema por defecto: oscuro.** Casi negro con un solo acento vibrante (violeta). Light mode existe y está mantenido (toggle en sidebar/ajustes vía `next-themes`), pero dark es la identidad visual primaria — es la que se muestra en el login y en cualquier material de portfolio.
+- Glassmorphism puntual (`.glass` en `globals.css`) para cards sobre fondos con textura, no en toda la UI.
+- Fondo de puntos (`.bg-dot-grid`) reservado a paneles de marca/hero — nunca en pantallas de trabajo (dashboard, formularios), para no restar legibilidad.
 
 ## Color (tokens shadcn en `globals.css`)
 
-| Token | Light | Uso |
-|---|---|---|
-| `background` | stone-50 cálido | Fondo general |
-| `foreground` | stone-900 | Texto (contraste > 4.5:1) |
-| `primary` | teal-700 `#0f766e` | Acciones principales, nav activa (5.7:1 sobre blanco) |
-| `accent` | amber | Rachas, celebraciones (siempre con icono + texto, nunca color solo) |
-| `destructive` | rose-600 | Errores, acciones destructivas |
+| Token | Dark (default) | Light | Uso |
+|---|---|---|---|
+| `background` | casi negro `oklch(0.135 0.012 285)` | blanco frío | Fondo general |
+| `foreground` | blanco cálido | casi negro | Texto (contraste > 4.5:1 en ambos) |
+| `primary` | violeta eléctrico `oklch(0.635 0.225 293)` (~`#8b5cf6`) | mismo tono, ajustado a `oklch(0.541...)` para contraste en blanco | Acciones principales, nav activa, `glow-primary` |
+| `accent` | violeta oscuro tenue | violeta claro tenue | Chips de ícono, resaltados — siempre con ícono + texto |
+| `destructive` | rojo/rosa vívido | rosa | Errores, acciones destructivas |
 
-- Éxito: emerald-600. Los estados usan icono + texto además de color.
-- Dark mode: variantes desaturadas, contraste verificado por separado.
+- Números tabulares/mono (`font-mono`) en contadores y métricas grandes — detalle "data" premium (estilo Linear/Vercel).
 - Los porcentajes de match usan escala honesta: sin verde engañoso arriba de números bajos.
+- Utilidades nuevas: `.text-gradient-brand` (headline hero), `.glow-primary` (halo en CTA principal), `.glass`, `.bg-dot-grid`.
 
 ## Tipografía
 

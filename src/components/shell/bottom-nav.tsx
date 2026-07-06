@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { Menu } from "lucide-react";
 
 import { SignoutButton } from "@/components/shell/signout-button";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { Separator } from "@/components/ui/separator";
 import {
   Sheet,
@@ -30,7 +31,7 @@ export function BottomNav() {
   return (
     <nav
       aria-label="Secciones"
-      className="fixed inset-x-0 bottom-0 z-40 border-t bg-background pb-[env(safe-area-inset-bottom)] lg:hidden"
+      className="fixed inset-x-0 bottom-0 z-40 border-t border-sidebar-border bg-sidebar/95 backdrop-blur-lg pb-[env(safe-area-inset-bottom)] lg:hidden"
     >
       <div className="grid grid-cols-5">
         {seccionesPrincipales.map((item) => {
@@ -91,6 +92,7 @@ export function BottomNav() {
                 );
               })}
               <Separator className="my-2" />
+              <ThemeToggle />
               <SignoutButton />
             </div>
           </SheetContent>

@@ -41,7 +41,6 @@ export function HoyView({ aplicaciones, nombre }: Props) {
           ease: "power3.out",
         });
 
-        // El contador sube desde cero hasta el número real.
         const obj = { n: 0 };
         gsap.to(obj, {
           n: aplicaciones,
@@ -63,7 +62,7 @@ export function HoyView({ aplicaciones, nombre }: Props) {
   return (
     <div ref={container} className="space-y-6">
       <div data-anim="titulo">
-        <h1 className="text-3xl font-bold tracking-tight">
+        <h1 className="text-3xl font-semibold tracking-tight">
           {nombre ? `Hola, ${nombre}` : "Hoy"}
         </h1>
         <p className="mt-1 text-base text-muted-foreground">
@@ -71,13 +70,17 @@ export function HoyView({ aplicaciones, nombre }: Props) {
         </p>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-3">
         <Card
           data-anim="card"
-          className="relative overflow-hidden border-primary/20"
+          className="relative overflow-hidden sm:col-span-2 border-primary/15"
         >
           <div
-            className="pointer-events-none absolute -top-10 -right-10 size-36 rounded-full bg-accent blur-2xl"
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary to-transparent"
+          />
+          <div
+            className="pointer-events-none absolute -top-16 -right-16 size-56 rounded-full bg-primary/10 blur-3xl"
             aria-hidden="true"
           />
           <CardHeader>
@@ -85,7 +88,7 @@ export function HoyView({ aplicaciones, nombre }: Props) {
               <Send className="size-4 text-primary" aria-hidden="true" />
               Aplicaciones enviadas
             </CardDescription>
-            <CardTitle className="text-5xl font-bold tabular-nums text-primary">
+            <CardTitle className="font-mono text-6xl font-semibold tracking-tight text-foreground">
               <span ref={contadorRef}>{aplicaciones}</span>
             </CardTitle>
           </CardHeader>
@@ -96,7 +99,7 @@ export function HoyView({ aplicaciones, nombre }: Props) {
           </CardContent>
         </Card>
 
-        <Card data-anim="card">
+        <Card data-anim="card" className="relative overflow-hidden">
           <CardHeader>
             <CardDescription className="flex items-center gap-2 text-base">
               <MessageSquareHeart
@@ -105,13 +108,12 @@ export function HoyView({ aplicaciones, nombre }: Props) {
               />
               Tu próximo paso
             </CardDescription>
-            <CardTitle className="text-lg leading-snug">
-              Contanos quién sos y qué buscás
+            <CardTitle className="text-lg leading-snug font-medium">
+              Contanos quién sos
             </CardTitle>
           </CardHeader>
           <CardContent className="text-sm text-muted-foreground">
-            Muy pronto vas a poder contarlo hablando en la sección Chat, como
-            se lo contarías a un amigo. Con eso armamos tu perfil y tu CV.
+            Muy pronto en la sección Chat, como se lo contarías a un amigo.
           </CardContent>
         </Card>
       </div>
@@ -131,7 +133,7 @@ export function HoyView({ aplicaciones, nombre }: Props) {
           </p>
           <p className="flex items-start gap-2">
             <Sparkles
-              className="mt-0.5 size-4 shrink-0 text-[oklch(0.769_0.188_70.08)]"
+              className="mt-0.5 size-4 shrink-0 text-primary"
               aria-hidden="true"
             />
             Sin humo: si una vacante no te conviene, te lo decimos. Y si pasás

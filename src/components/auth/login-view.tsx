@@ -1,9 +1,10 @@
 "use client";
 
 import { Suspense, useRef } from "react";
-import { BadgeCheck, FileText, Rocket } from "lucide-react";
+import { BadgeCheck, FileText, Rocket, Sparkles } from "lucide-react";
 
 import { LoginForm } from "@/components/auth/login-form";
+import { Logo } from "@/components/logo";
 import { gsap, SplitText, useGSAP } from "@/lib/gsap";
 
 const promesas = [
@@ -29,13 +30,15 @@ export function LoginView() {
       const mm = gsap.matchMedia();
 
       mm.add("(prefers-reduced-motion: no-preference)", () => {
-        const tl = gsap.timeline({
-          defaults: { ease: "power3.out" },
-        });
-
+        const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
         const titulo = new SplitText("[data-titulo]", { type: "words" });
 
         tl.from("[data-marca]", { y: -16, autoAlpha: 0, duration: 0.5 })
+          .from(
+            "[data-badge]",
+            { y: -12, autoAlpha: 0, duration: 0.45 },
+            "-=0.25",
+          )
           .from(
             titulo.words,
             { y: 28, autoAlpha: 0, duration: 0.6, stagger: 0.05 },
@@ -52,19 +55,18 @@ export function LoginView() {
             "-=0.55",
           );
 
-        // Deriva lenta y continua de los brillos del fondo.
         gsap.to("[data-blob='1']", {
-          x: 60,
-          y: -40,
-          duration: 9,
+          x: 70,
+          y: -50,
+          duration: 10,
           yoyo: true,
           repeat: -1,
           ease: "sine.inOut",
         });
         gsap.to("[data-blob='2']", {
-          x: -50,
-          y: 50,
-          duration: 11,
+          x: -60,
+          y: 60,
+          duration: 12,
           yoyo: true,
           repeat: -1,
           ease: "sine.inOut",
@@ -79,40 +81,45 @@ export function LoginView() {
       {/* Panel de marca (desktop) */}
       <section
         aria-hidden="true"
-        className="relative hidden overflow-hidden bg-[oklch(0.28_0.05_192)] lg:flex lg:flex-col lg:justify-between lg:p-12"
+        className="bg-dot-grid relative hidden overflow-hidden bg-[oklch(0.1_0.014_285)] lg:flex lg:flex-col lg:justify-between lg:p-12 [mask-image:radial-gradient(ellipse_120%_100%_at_0%_0%,black_60%,transparent_100%)]"
       >
         <div
           data-blob="1"
-          className="pointer-events-none absolute -top-24 -left-24 size-96 rounded-full bg-[oklch(0.6_0.104_184.7)] opacity-30 blur-3xl"
+          className="pointer-events-none absolute -top-24 -left-24 size-96 rounded-full bg-[oklch(0.635_0.225_293)] opacity-30 blur-3xl"
         />
         <div
           data-blob="2"
-          className="pointer-events-none absolute -right-32 bottom-0 size-[28rem] rounded-full bg-[oklch(0.769_0.188_70.08)] opacity-20 blur-3xl"
+          className="pointer-events-none absolute -right-32 bottom-0 size-[28rem] rounded-full bg-[oklch(0.6_0.22_320)] opacity-20 blur-3xl"
         />
 
-        <p
-          data-marca
-          className="relative text-2xl font-bold tracking-tight text-white"
-        >
-          Career OS
-        </p>
+        <div data-marca className="relative">
+          <Logo className="text-white" markClassName="size-8" />
+        </div>
 
-        <div className="relative space-y-10">
+        <div className="relative space-y-8">
+          <span
+            data-badge
+            className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-medium text-white/70"
+          >
+            <Sparkles className="size-3.5 text-[oklch(0.78_0.16_293)]" />
+            Gratis y open source
+          </span>
           <h1
             data-titulo
-            className="max-w-md text-4xl leading-tight font-bold text-white xl:text-5xl"
+            className="max-w-md text-4xl leading-[1.1] font-semibold tracking-tight text-white xl:text-5xl"
           >
-            Conseguí trabajo con un equipo que te dice la verdad.
+            Conseguí trabajo con un equipo que{" "}
+            <span className="text-gradient-brand">te dice la verdad</span>.
           </h1>
           <ul className="space-y-4">
             {promesas.map((p) => (
               <li
                 key={p.texto}
                 data-promesa
-                className="flex items-center gap-3 text-base text-teal-50/90"
+                className="flex items-center gap-3 text-base text-white/70"
               >
-                <span className="flex size-9 items-center justify-center rounded-xl bg-white/10">
-                  <p.icono className="size-5 text-[oklch(0.878_0.116_178)]" />
+                <span className="flex size-9 items-center justify-center rounded-xl border border-white/10 bg-white/5">
+                  <p.icono className="size-4.5 text-[oklch(0.78_0.16_293)]" />
                 </span>
                 {p.texto}
               </li>
@@ -120,28 +127,25 @@ export function LoginView() {
           </ul>
         </div>
 
-        <p className="relative text-sm text-teal-100/60">
-          Gratis y open source. Tus datos son tuyos.
+        <p className="relative text-sm text-white/40">
+          Tus datos son tuyos. Siempre.
         </p>
       </section>
 
       {/* Formulario */}
-      <main className="relative flex items-center justify-center overflow-hidden px-4 py-12">
+      <main className="bg-dot-grid relative flex items-center justify-center overflow-hidden px-4 py-12 lg:bg-none">
         <div
-          className="pointer-events-none absolute -top-32 right-0 size-80 rounded-full bg-[oklch(0.953_0.051_180.8)] opacity-60 blur-3xl lg:hidden"
+          className="pointer-events-none absolute -top-32 right-0 size-80 rounded-full bg-[oklch(0.635_0.225_293)] opacity-20 blur-3xl lg:hidden"
           aria-hidden="true"
         />
-        <div data-form className="w-full max-w-sm space-y-8">
-          <div className="space-y-2 text-center lg:hidden">
-            <p className="text-3xl font-bold tracking-tight text-primary">
-              Career OS
-            </p>
-            <p className="text-base text-muted-foreground">
-              Tu equipo para conseguir trabajo. Honesto, gratis y a tu ritmo.
-            </p>
+        <div data-form className="relative w-full max-w-sm space-y-8">
+          <div className="lg:hidden">
+            <Logo className="justify-center" markClassName="size-9" />
           </div>
-          <div className="hidden space-y-1 lg:block">
-            <h2 className="text-2xl font-bold tracking-tight">Bienvenido</h2>
+          <div className="space-y-1 text-center lg:text-left">
+            <h2 className="text-2xl font-semibold tracking-tight">
+              Bienvenido de vuelta
+            </h2>
             <p className="text-base text-muted-foreground">
               Entrá y seguí donde lo dejaste.
             </p>
