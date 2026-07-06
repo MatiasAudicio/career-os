@@ -27,22 +27,23 @@ function LogoMark({ className }: { className?: string }) {
 type Props = {
   className?: string;
   markClassName?: string;
+  wordmarkClassName?: string;
   showWordmark?: boolean;
 };
 
+// El tamaño del wordmark se pasa por prop a propósito: el mismo lockup se usa
+// en el hero grande del login y en la sidebar compacta, y un solo tamaño fijo
+// se ve desproporcionado en uno de los dos contextos.
 export function Logo({
   className,
   markClassName = "size-8",
+  wordmarkClassName = "text-lg font-semibold tracking-tight",
   showWordmark = true,
 }: Props) {
   return (
     <span className={`inline-flex items-center gap-2.5 ${className ?? ""}`}>
       <LogoMark className={markClassName} />
-      {showWordmark && (
-        <span className="text-lg font-semibold tracking-tight">
-          Career OS
-        </span>
-      )}
+      {showWordmark && <span className={wordmarkClassName}>Career OS</span>}
     </span>
   );
 }

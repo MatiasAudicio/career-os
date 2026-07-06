@@ -15,12 +15,21 @@ export function Sidebar() {
 
   return (
     <aside className="sticky top-0 hidden h-dvh w-64 shrink-0 flex-col border-r border-sidebar-border bg-sidebar lg:flex">
-      <div className="px-5 py-5">
-        <Link href="/hoy">
-          <Logo markClassName="size-7" />
+      <div className="flex h-14 items-center border-b border-sidebar-border px-4">
+        <Link
+          href="/hoy"
+          className="rounded-lg px-1.5 py-1 transition-opacity hover:opacity-80"
+        >
+          <Logo
+            markClassName="size-6"
+            wordmarkClassName="text-[13px] font-semibold tracking-tight text-muted-foreground"
+          />
         </Link>
       </div>
-      <nav aria-label="Secciones" className="flex-1 space-y-0.5 px-3">
+      <nav
+        aria-label="Secciones"
+        className="flex-1 space-y-0.5 px-3 pt-3"
+      >
         {secciones.map((item) => {
           const activa = pathname.startsWith(item.href);
           return (
