@@ -37,7 +37,7 @@ export function LoginForm() {
     const { error: authError } = await supabase.auth.signInWithOtp({
       email,
       options: {
-        emailRedirectTo: `${window.location.origin}/auth/confirm?next=/hoy`,
+        emailRedirectTo: `${window.location.origin}/auth/confirm`,
       },
     });
 
