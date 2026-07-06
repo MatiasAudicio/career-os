@@ -1,26 +1,22 @@
-function LogoMark({ className }: { className?: string }) {
+function LogoMark({ className = "size-8" }: { className?: string }) {
   return (
-    <svg
-      viewBox="0 0 32 32"
-      className={className}
-      aria-hidden="true"
-      fill="none"
+    <span
+      className={`inline-flex items-center justify-center rounded-[28%] border border-primary/25 bg-accent text-primary ${className}`}
     >
-      <defs>
-        <linearGradient id="logo-grad" x1="0" y1="0" x2="32" y2="32">
-          <stop offset="0%" stopColor="oklch(0.78 0.16 293)" />
-          <stop offset="100%" stopColor="oklch(0.7 0.2 320)" />
-        </linearGradient>
-      </defs>
-      <rect width="32" height="32" rx="9" fill="url(#logo-grad)" />
-      <path
-        d="M20.5 10.5c-1.2-1.1-2.8-1.7-4.5-1.7-3.7 0-6.8 3-6.8 7.2s3.1 7.2 6.8 7.2c1.7 0 3.3-.6 4.5-1.7"
-        stroke="white"
-        strokeWidth="2.4"
-        strokeLinecap="round"
+      <svg
+        viewBox="0 0 24 24"
+        className="size-[60%]"
+        aria-hidden="true"
         fill="none"
-      />
-    </svg>
+      >
+        <path
+          d="M16.5 7.6c-1.1-1-2.5-1.6-4-1.6-3.2 0-5.9 2.6-5.9 6s2.7 6 5.9 6c1.5 0 2.9-.6 4-1.6"
+          stroke="currentColor"
+          strokeWidth="2.1"
+          strokeLinecap="round"
+        />
+      </svg>
+    </span>
   );
 }
 
