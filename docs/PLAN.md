@@ -12,7 +12,7 @@ Asistente open source de búsqueda de empleo con agentes IA, para personas que b
 
 | Capa | Elección | Por qué |
 |---|---|---|
-| Frontend | **Next.js 15 (App Router) + TypeScript + React** | React es tu skill objetivo #1; Next.js es lo que pide el mercado; aprendés construyendo (tu estilo). |
+| Frontend | **Next.js 16 (App Router) + TypeScript + React** | React es tu skill objetivo #1; Next.js es lo que pide el mercado; aprendés construyendo (tu estilo). |
 | UI | **Tailwind + shadcn/ui** | UI profesional y accesible sin diseñar desde cero. Estándar de facto 2026. |
 | IA | **Vercel AI SDK (`ai`)** | Abstrae providers y resuelve streaming de chat. Cambiar Anthropic↔Ollama↔OpenAI es cambiar una línea. |
 | Providers | `@ai-sdk/anthropic` (BYOK) + `ollama-ai-provider` (local) | Ver sección 3. |

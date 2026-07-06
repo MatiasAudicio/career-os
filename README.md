@@ -17,7 +17,7 @@ Career OS te acompaña en toda la búsqueda laboral con un equipo de agentes esp
 
 ## 🧱 Stack
 
-Next.js 15 · TypeScript · Tailwind v4 + shadcn/ui · Supabase (Postgres + RLS) · Vercel AI SDK (Anthropic / Ollama) · Web Speech API
+Next.js 16 · TypeScript · Tailwind v4 + shadcn/ui · Supabase (Postgres + RLS) · Vercel AI SDK (Anthropic / Ollama) · Web Speech API
 
 ## 🚧 Estado
 

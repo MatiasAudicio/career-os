@@ -9,7 +9,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 Web app open source de búsqueda de empleo con agentes IA, para personas que no saben de código. Plan de ejecución completo en `docs/PLAN.md` — leerlo antes de trabajar en features.
 
 ## Stack
-Next.js 15 (App Router) + TypeScript + Tailwind v4 + shadcn/ui · Supabase (Postgres + RLS + Auth magic link) · Vercel AI SDK con providers intercambiables (Anthropic BYOK / Ollama local) · Web Speech API para dictado · Deploy en Vercel.
+Next.js 16 (App Router) + TypeScript + Tailwind v4 + shadcn/ui · Supabase (Postgres + RLS + Auth magic link) · Vercel AI SDK con providers intercambiables (Anthropic BYOK / Ollama local) · Web Speech API para dictado · Deploy en Vercel.
 
 ## Especialistas
 Usar los subagentes de `.claude/agents/` según el área: `frontend-react`, `ux-ui-designer`, `supabase-db`, `backend-ai`, `qa-tester`. Para diseño visual, si la skill `ui-ux-pro-max` está disponible, usarla.
