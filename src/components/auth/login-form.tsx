@@ -16,6 +16,20 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { createClient } from "@/lib/supabase/client";
 
+function mensajeDeError(codigo: string | undefined, detalle: string): string {
+  switch (codigo) {
+    case "over_email_send_rate_limit":
+    case "over_request_rate_limit":
+      return "Alcanzamos el límite de correos por hora. Esperá un rato y probá de nuevo — el enlace va a llegar.";
+    case "email_address_invalid":
+      return "Esa dirección de correo no parece válida. Revisala y probá de nuevo.";
+    case "signup_disabled":
+      return "Los registros están desactivados por el momento.";
+    default:
+      return `No pudimos enviarte el correo (${detalle}). Probá de nuevo en unos minutos.`;
+  }
+}
+
 export function LoginForm() {
   const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
@@ -43,9 +57,7 @@ export function LoginForm() {
 
     if (authError) {
       setEstado("inicial");
-      setError(
-        "No pudimos enviarte el correo. Revisá que la dirección esté bien escrita y probá de nuevo.",
-      );
+      setError(mensajeDeError(authError.code, authError.message));
       return;
     }
 
