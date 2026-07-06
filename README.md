@@ -1,36 +1,36 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Career OS
 
-## Getting Started
+**Tu equipo de agentes IA para conseguir trabajo — honesto, gratis y open source.**
 
-First, run the development server:
+> 🇬🇧 *Career OS is an open source, AI-powered job search assistant for non-technical people. Spanish-first; English coming after MVP.*
+
+Career OS te acompaña en toda la búsqueda laboral con un equipo de agentes especializados que **te dicen la verdad**: qué tan compatible sos realmente con cada vacante, cuándo aplicar (y cuándo no), y te empujan a mandar aplicaciones en vez de quedarte "preparándote" para siempre.
+
+## ✨ Qué hace
+
+- 💬 **Chat con agentes de carrera** — estratega, redactor de CV, coach de entrevistas, coach de aprendizaje — con **dictado por voz**: contá tu experiencia hablando, como se la contarías a un amigo.
+- 🎯 **Análisis de vacantes con porcentaje de match honesto** y decisión clara: APLICAR / DESPUÉS / IGNORAR.
+- 📄 **CV y cartas de presentación a medida** de cada vacante, versionados, exportables a PDF. Nunca inventa experiencia que no tenés.
+- 📊 **Tracker de aplicaciones** — contador, pipeline (aplicado → respuesta → entrevista → oferta) y rachas que celebran *aplicar*, no procrastinar.
+- 🧭 **Panel "Hoy"** — tu única prioridad y próxima acción concreta, para no abrumarte.
+- 🔒 **Tu IA, tus datos** — usá tu propia API key de Claude (se guarda solo en tu navegador) o un modelo **100% local con Ollama**. Tus datos se exportan completos cuando quieras.
+
+## 🧱 Stack
+
+Next.js 15 · TypeScript · Tailwind v4 + shadcn/ui · Supabase (Postgres + RLS) · Vercel AI SDK (Anthropic / Ollama) · Web Speech API
+
+## 🚧 Estado
+
+En desarrollo activo — MVP en construcción. Plan completo en [`docs/PLAN.md`](docs/PLAN.md).
+
+## 🏁 Desarrollo local
 
 ```bash
+npm install
+cp .env.example .env.local   # completar con tu proyecto de Supabase
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 📄 Licencia
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+[MIT](LICENSE)
