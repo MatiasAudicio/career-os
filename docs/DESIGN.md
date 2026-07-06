@@ -39,9 +39,12 @@ Cálido, humano, esperanzador y calmo. El usuario probablemente está estresado 
 - Español rioplatense humano: "Contanos tu experiencia", no "Completar perfil". Cero jerga técnica.
 - Una acción principal por pantalla; estados vacíos con explicación + UN botón.
 
-## Interacción
+## Interacción y animación (GSAP)
 
+- Animaciones con **GSAP + @gsap/react** (`src/lib/gsap.ts`). Registrar SOLO los plugins que se usan — cada plugin es bundle que el usuario descarga.
+- Toda animación va dentro de `gsap.matchMedia().add("(prefers-reduced-motion: no-preference)", ...)` — sin excepción.
+- Dónde sí: entradas de página (fade+y con stagger ≤0.12s), contadores de métricas, el hero del login, feedback de acciones. Dónde no: no animar layout (width/height), no bloquear input, no loops llamativos en vistas de trabajo (el usuario viene estresado; los loops solo en decoración de fondo, lentos y sutiles).
+- Duraciones: micro 150–300ms, entradas ≤600ms, easing `power3.out` al entrar.
 - Íconos: Lucide (viene con shadcn), un solo estilo, nunca emojis como íconos estructurales.
-- Micro-interacciones 150–300ms, `ease-out` al entrar; respetar `prefers-reduced-motion`.
 - Feedback en <100ms al tocar; botones con spinner durante operaciones async.
 - Formularios: label visible siempre, error debajo del campo con causa + cómo arreglarlo, validación on-blur.
