@@ -23,16 +23,20 @@ function mensajeDeError(codigo: string | undefined, detalle: string): string {
       return "Alcanzamos el límite de correos por hora. Esperá un rato y probá de nuevo — el enlace va a llegar.";
     case "email_address_invalid":
       return "Esa dirección de correo no parece válida. Revisala y probá de nuevo.";
+    case "invalid_credentials":
+      return "El correo o la contraseña no coinciden. Revisalos y probá de nuevo.";
     case "signup_disabled":
       return "Los registros están desactivados por el momento.";
     default:
-      return `No pudimos enviarte el correo (${detalle}). Probá de nuevo en unos minutos.`;
+      return `No pudimos completar el ingreso (${detalle}). Probá de nuevo en unos minutos.`;
   }
 }
 
 export function LoginForm() {
   const searchParams = useSearchParams();
+  const [modo, setModo] = useState<"enlace" | "password">("enlace");
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [estado, setEstado] = useState<"inicial" | "enviando" | "enviado">(
     "inicial",
   );
@@ -42,7 +46,7 @@ export function LoginForm() {
       : null,
   );
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleEnlace(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
     setEstado("enviando");
@@ -62,6 +66,27 @@ export function LoginForm() {
     }
 
     setEstado("enviado");
+  }
+
+  async function handlePassword(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setError(null);
+    setEstado("enviando");
+
+    const supabase = createClient();
+    const { error: authError } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (authError) {
+      setEstado("inicial");
+      setError(mensajeDeError(authError.code, authError.message));
+      return;
+    }
+
+    // Recarga completa para que el servidor lea la cookie de sesión nueva.
+    window.location.assign("/hoy");
   }
 
   if (estado === "enviado") {
@@ -91,16 +116,26 @@ export function LoginForm() {
     );
   }
 
+  const enviando = estado === "enviando";
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-xl">Ingresá con tu correo</CardTitle>
+        <CardTitle className="text-xl">
+          {modo === "enlace" ? "Ingresá con tu correo" : "Ingresá con tu contraseña"}
+        </CardTitle>
         <CardDescription className="text-base">
-          Sin contraseñas: te mandamos un enlace y listo.
+          {modo === "enlace"
+            ? "Sin contraseñas: te mandamos un enlace y listo."
+            : "Correo y contraseña de tu cuenta."}
         </CardDescription>
       </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+      <CardContent className="space-y-3">
+        <form
+          onSubmit={modo === "enlace" ? handleEnlace : handlePassword}
+          className="space-y-4"
+          noValidate
+        >
           <div className="space-y-2">
             <Label htmlFor="email">Tu correo electrónico</Label>
             <Input
@@ -115,27 +150,60 @@ export function LoginForm() {
               aria-invalid={error ? true : undefined}
               className="h-11 text-base"
             />
-            {error && (
-              <p role="alert" className="text-sm text-destructive">
-                {error}
-              </p>
-            )}
           </div>
+          {modo === "password" && (
+            <div className="space-y-2">
+              <Label htmlFor="password">Tu contraseña</Label>
+              <Input
+                id="password"
+                type="password"
+                autoComplete="current-password"
+                required
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                aria-invalid={error ? true : undefined}
+                className="h-11 text-base"
+              />
+            </div>
+          )}
+          {error && (
+            <p role="alert" className="text-sm text-destructive">
+              {error}
+            </p>
+          )}
           <Button
             type="submit"
             className="h-11 w-full text-base"
-            disabled={estado === "enviando" || email.trim() === ""}
+            disabled={
+              enviando ||
+              email.trim() === "" ||
+              (modo === "password" && password === "")
+            }
           >
-            {estado === "enviando" ? (
+            {enviando ? (
               <>
                 <Loader2 className="animate-spin" aria-hidden="true" />
-                Enviando…
+                {modo === "enlace" ? "Enviando…" : "Entrando…"}
               </>
-            ) : (
+            ) : modo === "enlace" ? (
               "Enviarme el enlace"
+            ) : (
+              "Entrar"
             )}
           </Button>
         </form>
+        <Button
+          variant="ghost"
+          className="w-full text-muted-foreground"
+          onClick={() => {
+            setModo(modo === "enlace" ? "password" : "enlace");
+            setError(null);
+          }}
+        >
+          {modo === "enlace"
+            ? "Prefiero entrar con contraseña"
+            : "Prefiero el enlace por correo"}
+        </Button>
       </CardContent>
     </Card>
   );
