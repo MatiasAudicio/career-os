@@ -173,3 +173,16 @@
       0 8px 30px -8px color-mix(in oklch, var(--primary) 55%, transparent);
   }
 }
+
+/* Exportar documentos a PDF (/imprimir/[id]): fuerza texto negro sobre
+   blanco al imprimir, sin importar el tema oscuro que esté activo — nadie
+   quiere gastar tinta imprimiendo un CV con fondo casi negro. */
+@media print {
+  @page {
+    margin: 2cm;
+  }
+  body {
+    background: white !important;
+    color: black !important;
+  }
+}
