@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { SeccionEnConstruccion } from "@/components/shell/seccion-en-construccion";
+import { AiConfigForm } from "@/components/ajustes/ai-config-form";
 
 export const metadata: Metadata = {
   title: "Ajustes",
@@ -8,9 +8,15 @@ export const metadata: Metadata = {
 
 export default function AjustesPage() {
   return (
-    <SeccionEnConstruccion
-      titulo="Ajustes"
-      descripcion="Acá vas a elegir tu asistente de IA (tu propia clave de Claude o un modelo local con Ollama), el idioma, y descargar todos tus datos cuando quieras."
-    />
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-3xl font-semibold tracking-tight">Ajustes</h1>
+        <p className="mt-1 text-base text-muted-foreground">
+          Configurá tu asistente de IA. El resto (tema, exportar tus datos)
+          llega pronto.
+        </p>
+      </div>
+      <AiConfigForm />
+    </div>
   );
 }
