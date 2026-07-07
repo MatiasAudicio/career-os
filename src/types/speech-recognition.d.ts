@@ -16,13 +16,19 @@ declare global {
     results: ArrayLike<SpeechRecognitionResultEntry>;
   }
 
+  interface SpeechRecognitionErrorEvent extends Event {
+    error: string;
+    message?: string;
+  }
+
   interface SpeechRecognition extends EventTarget {
     lang: string;
     continuous: boolean;
     interimResults: boolean;
     onresult: ((event: SpeechRecognitionEvent) => void) | null;
+    onstart: (() => void) | null;
     onend: (() => void) | null;
-    onerror: (() => void) | null;
+    onerror: ((event: SpeechRecognitionErrorEvent) => void) | null;
     start(): void;
     stop(): void;
   }
