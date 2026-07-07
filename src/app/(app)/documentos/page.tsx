@@ -1,16 +1,26 @@
 import type { Metadata } from "next";
 
-import { SeccionEnConstruccion } from "@/components/shell/seccion-en-construccion";
+import { DocumentosView } from "@/components/documentos/documentos-view";
+import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
   title: "Documentos",
 };
 
-export default function DocumentosPage() {
-  return (
-    <SeccionEnConstruccion
-      titulo="Documentos"
-      descripcion="Tus CVs y cartas de presentación, uno por vacante, siempre guardados y listos para descargar. Nunca inventamos experiencia que no tenés."
-    />
-  );
+export default async function DocumentosPage() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return <DocumentosView documentos={[]} />;
+  }
+
+  const { data: documentos } = await supabase
+    .from("documents")
+    .select("*, applications(empresa, rol)")
+    .order("created_at", { ascending: false });
+
+  return <DocumentosView documentos={documentos ?? []} />;
 }

@@ -26,7 +26,7 @@ export type Documento = {
   version: number;
 };
 
-const TIPO_LABEL: Record<Documento["tipo"], string> = {
+export const TIPO_LABEL: Record<Documento["tipo"], string> = {
   cv: "CV",
   carta: "Carta",
   mensaje: "Mensaje",
