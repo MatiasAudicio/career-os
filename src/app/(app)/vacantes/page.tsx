@@ -1,16 +1,26 @@
 import type { Metadata } from "next";
 
-import { SeccionEnConstruccion } from "@/components/shell/seccion-en-construccion";
+import { VacantesView } from "@/components/vacantes/vacantes-view";
+import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
   title: "Vacantes",
 };
 
-export default function VacantesPage() {
-  return (
-    <SeccionEnConstruccion
-      titulo="Vacantes"
-      descripcion="Vas a pegar el texto de una vacante y te vamos a decir, con honestidad, qué tan compatible sos y si conviene aplicar — con el porqué, no solo un número."
-    />
-  );
+export default async function VacantesPage() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return <VacantesView vacantesIniciales={[]} />;
+  }
+
+  const { data: vacantes } = await supabase
+    .from("applications")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  return <VacantesView vacantesIniciales={vacantes ?? []} />;
 }
