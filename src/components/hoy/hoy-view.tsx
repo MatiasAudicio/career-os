@@ -11,6 +11,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { FunnelChart } from "@/components/hoy/funnel-chart";
+import { TendenciaSemanal } from "@/components/hoy/tendencia-semanal";
 import { PipelineStrip } from "@/components/vacantes/pipeline-strip";
 import { gsap, useGSAP } from "@/lib/gsap";
 import { diasDesdeUltimaAplicacion, type Estado } from "@/lib/vacantes/pipeline";
@@ -20,9 +22,18 @@ type Props = {
   nombre: string | null;
   conteo: Record<Estado, number>;
   ultimaFechaAplicacion: string | null;
+  vacantes: { estado: Estado }[];
+  fechasAplicacion: string[];
 };
 
-export function HoyView({ aplicaciones, nombre, conteo, ultimaFechaAplicacion }: Props) {
+export function HoyView({
+  aplicaciones,
+  nombre,
+  conteo,
+  ultimaFechaAplicacion,
+  vacantes,
+  fechasAplicacion,
+}: Props) {
   const container = useRef<HTMLDivElement>(null);
   const contadorRef = useRef<HTMLSpanElement>(null);
   const dias = diasDesdeUltimaAplicacion(ultimaFechaAplicacion);
@@ -109,6 +120,15 @@ export function HoyView({ aplicaciones, nombre, conteo, ultimaFechaAplicacion }:
       </div>
 
       <PipelineStrip conteo={conteo} />
+
+      <div className="grid gap-4 lg:grid-cols-2">
+        <div data-anim="card">
+          <FunnelChart vacantes={vacantes} />
+        </div>
+        <div data-anim="card">
+          <TendenciaSemanal fechasAplicacion={fechasAplicacion} />
+        </div>
+      </div>
 
       <Card data-anim="card">
         <CardHeader>

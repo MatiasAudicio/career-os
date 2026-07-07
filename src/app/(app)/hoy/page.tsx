@@ -30,6 +30,8 @@ export default async function HoyPage() {
       nombre={perfil?.nombre ?? null}
       conteo={conteo}
       ultimaFechaAplicacion={ultimaFecha}
+      vacantes={filas}
+      fechasAplicacion={fechasAplicacion}
     />
   );
 }
