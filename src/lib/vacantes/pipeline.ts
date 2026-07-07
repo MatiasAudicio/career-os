@@ -29,3 +29,16 @@ export function contarPorEstado(vacantes: { estado: Estado }[]): Record<Estado, 
   }
   return conteo;
 }
+
+// Para el nudge anti-trampa del dashboard "Hoy". fechaMasReciente es la
+// fecha_aplicacion más reciente entre las vacantes del usuario (null si
+// nunca aplicó todavía).
+export function diasDesdeUltimaAplicacion(
+  fechaMasReciente: string | null,
+  hoy: Date = new Date(),
+): number | null {
+  if (!fechaMasReciente) return null;
+  const unDia = 1000 * 60 * 60 * 24;
+  const diferencia = Date.UTC(hoy.getFullYear(), hoy.getMonth(), hoy.getDate()) - Date.parse(fechaMasReciente);
+  return Math.max(0, Math.round(diferencia / unDia));
+}

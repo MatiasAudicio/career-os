@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 
 import { HoyView } from "@/components/hoy/hoy-view";
 import { createClient } from "@/lib/supabase/server";
+import { contarPorEstado } from "@/lib/vacantes/pipeline";
 
 export const metadata: Metadata = {
   title: "Hoy",
@@ -10,13 +11,25 @@ export const metadata: Metadata = {
 export default async function HoyPage() {
   const supabase = await createClient();
 
-  const [{ count }, { data: perfil }] = await Promise.all([
-    supabase
-      .from("applications")
-      .select("*", { count: "exact", head: true })
-      .not("fecha_aplicacion", "is", null),
+  const [{ data: aplicaciones }, { data: perfil }] = await Promise.all([
+    supabase.from("applications").select("estado, fecha_aplicacion"),
     supabase.from("profiles").select("nombre").maybeSingle(),
   ]);
 
-  return <HoyView aplicaciones={count ?? 0} nombre={perfil?.nombre ?? null} />;
+  const filas = aplicaciones ?? [];
+  const conteo = contarPorEstado(filas);
+  const fechasAplicacion = filas
+    .map((f) => f.fecha_aplicacion as string | null)
+    .filter((f): f is string => f !== null)
+    .sort();
+  const ultimaFecha = fechasAplicacion.at(-1) ?? null;
+
+  return (
+    <HoyView
+      aplicaciones={fechasAplicacion.length}
+      nombre={perfil?.nombre ?? null}
+      conteo={conteo}
+      ultimaFechaAplicacion={ultimaFecha}
+    />
+  );
 }

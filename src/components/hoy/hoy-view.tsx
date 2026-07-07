@@ -1,7 +1,8 @@
 "use client";
 
 import { useRef } from "react";
-import { Briefcase, MessageSquareHeart, Send, Sparkles } from "lucide-react";
+import Link from "next/link";
+import { AlertTriangle, Briefcase, CheckCircle2, Send, Sparkles } from "lucide-react";
 
 import {
   Card,
@@ -10,16 +11,21 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { PipelineStrip } from "@/components/vacantes/pipeline-strip";
 import { gsap, useGSAP } from "@/lib/gsap";
+import { diasDesdeUltimaAplicacion, type Estado } from "@/lib/vacantes/pipeline";
 
 type Props = {
   aplicaciones: number;
   nombre: string | null;
+  conteo: Record<Estado, number>;
+  ultimaFechaAplicacion: string | null;
 };
 
-export function HoyView({ aplicaciones, nombre }: Props) {
+export function HoyView({ aplicaciones, nombre, conteo, ultimaFechaAplicacion }: Props) {
   const container = useRef<HTMLDivElement>(null);
   const contadorRef = useRef<HTMLSpanElement>(null);
+  const dias = diasDesdeUltimaAplicacion(ultimaFechaAplicacion);
 
   useGSAP(
     () => {
@@ -99,24 +105,10 @@ export function HoyView({ aplicaciones, nombre }: Props) {
           </CardContent>
         </Card>
 
-        <Card data-anim="card" className="relative overflow-hidden">
-          <CardHeader>
-            <CardDescription className="flex items-center gap-2 text-base">
-              <MessageSquareHeart
-                className="size-4 text-primary"
-                aria-hidden="true"
-              />
-              Tu próximo paso
-            </CardDescription>
-            <CardTitle className="text-lg leading-snug font-medium">
-              Contanos quién sos
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="text-sm text-muted-foreground">
-            Muy pronto en la sección Chat, como se lo contarías a un amigo.
-          </CardContent>
-        </Card>
+        <NudgeCard aplicaciones={aplicaciones} dias={dias} />
       </div>
+
+      <PipelineStrip conteo={conteo} />
 
       <Card data-anim="card">
         <CardHeader>
@@ -142,5 +134,70 @@ export function HoyView({ aplicaciones, nombre }: Props) {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+function NudgeCard({ aplicaciones, dias }: { aplicaciones: number; dias: number | null }) {
+  if (aplicaciones === 0 || dias === null) {
+    return (
+      <Card data-anim="card" className="relative overflow-hidden">
+        <CardHeader>
+          <CardDescription className="flex items-center gap-2 text-base">
+            <Sparkles className="size-4 text-primary" aria-hidden="true" />
+            Tu próximo paso
+          </CardDescription>
+          <CardTitle className="text-lg leading-snug font-medium">
+            Analizá tu primera vacante
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="text-sm text-muted-foreground">
+          Pegá el texto de un aviso en{" "}
+          <Link href="/vacantes" className="text-primary underline-offset-4 hover:underline">
+            Vacantes
+          </Link>{" "}
+          y te decimos, con honestidad, si te conviene aplicar.
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (dias >= 3) {
+    return (
+      <Card data-anim="card" className="relative overflow-hidden border-destructive/20">
+        <CardHeader>
+          <CardDescription className="flex items-center gap-2 text-base text-destructive">
+            <AlertTriangle className="size-4" aria-hidden="true" />
+            Anti-trampa
+          </CardDescription>
+          <CardTitle className="text-lg leading-snug font-medium">
+            Llevás {dias} días sin aplicar
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="text-sm text-muted-foreground">
+          No es momento de &ldquo;prepararte más&rdquo; —{" "}
+          <Link href="/vacantes" className="text-primary underline-offset-4 hover:underline">
+            analizá una vacante ahora
+          </Link>
+          .
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <Card data-anim="card" className="relative overflow-hidden">
+      <CardHeader>
+        <CardDescription className="flex items-center gap-2 text-base">
+          <CheckCircle2 className="size-4 text-primary" aria-hidden="true" />
+          Vas bien
+        </CardDescription>
+        <CardTitle className="text-lg leading-snug font-medium">
+          {dias === 0 ? "Aplicaste hoy" : `Aplicaste hace ${dias} día${dias === 1 ? "" : "s"}`}
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="text-sm text-muted-foreground">
+        Seguí a este ritmo — es lo que mueve la aguja.
+      </CardContent>
+    </Card>
   );
 }
