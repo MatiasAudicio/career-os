@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { ChevronDown, ChevronUp, Plus } from "lucide-react";
+import { ChevronDown, ChevronUp, FileText, Mail, Plus } from "lucide-react";
 import { toast } from "sonner";
 
 import { cambiarEstadoAction } from "@/app/(app)/vacantes/actions";
 import { ConfigRequerida } from "@/components/chat/config-requerida";
+import { DocumentoSheet, type Documento } from "@/components/documentos/documento-sheet";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,8 +26,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { PipelineStrip } from "@/components/vacantes/pipeline-strip";
 import { loadAiConfig } from "@/lib/ai/config-storage";
 import { ESTADOS, contarPorEstado, type Estado } from "@/lib/vacantes/pipeline";
+import type { TipoDocumento } from "@/lib/documentos/generar";
 
 type Decision = "aplicar" | "despues" | "ignorar";
 
@@ -79,6 +82,7 @@ export function VacantesView({ vacantesIniciales }: { vacantesIniciales: Vacante
   const [analizando, setAnalizando] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [configurado, setConfigurado] = useState(true);
+  const [documentoAbierto, setDocumentoAbierto] = useState<Documento | null>(null);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- localStorage no existe en SSR, hay que leerlo tras montar
@@ -251,25 +255,19 @@ export function VacantesView({ vacantesIniciales }: { vacantesIniciales: Vacante
               key={vacante.id}
               vacante={vacante}
               onCambiarEstado={(estado) => void handleCambiarEstado(vacante.id, estado)}
+              onDocumentoGenerado={setDocumentoAbierto}
             />
           ))}
         </div>
       )}
-    </div>
-  );
-}
 
-function PipelineStrip({ conteo }: { conteo: Record<Estado, number> }) {
-  return (
-    <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-7">
-      {ESTADOS.map(({ value, label }) => (
-        <Card key={value} size="sm" className="text-center">
-          <CardContent className="space-y-0.5 px-3 py-2">
-            <p className="font-mono text-xl font-semibold tracking-tight">{conteo[value]}</p>
-            <p className="text-xs text-muted-foreground">{label}</p>
-          </CardContent>
-        </Card>
-      ))}
+      <DocumentoSheet
+        documento={documentoAbierto}
+        open={documentoAbierto !== null}
+        onOpenChange={(abierto) => {
+          if (!abierto) setDocumentoAbierto(null);
+        }}
+      />
     </div>
   );
 }
@@ -277,11 +275,42 @@ function PipelineStrip({ conteo }: { conteo: Record<Estado, number> }) {
 function VacanteCard({
   vacante,
   onCambiarEstado,
+  onDocumentoGenerado,
 }: {
   vacante: Vacante;
   onCambiarEstado: (estado: Estado) => void;
+  onDocumentoGenerado: (documento: Documento) => void;
 }) {
   const [mostrarJustificacion, setMostrarJustificacion] = useState(false);
+  const [generando, setGenerando] = useState<TipoDocumento | null>(null);
+
+  async function handleGenerar(tipo: TipoDocumento) {
+    const config = loadAiConfig();
+    setGenerando(tipo);
+    try {
+      const res = await fetch("/api/documentos/generar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          applicationId: vacante.id,
+          tipo,
+          provider: config?.provider,
+          apiKey: config?.apiKey,
+          model: config?.model,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        toast.error(data.error ?? "No se pudo generar el documento.");
+        return;
+      }
+      onDocumentoGenerado(data.documento as Documento);
+    } catch {
+      toast.error("No se pudo conectar con el servidor. Probá de nuevo.");
+    } finally {
+      setGenerando(null);
+    }
+  }
 
   return (
     <Card>
@@ -358,6 +387,29 @@ function VacanteCard({
             )}
           </div>
         )}
+
+        <div className="flex flex-wrap gap-2 border-t pt-3">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => void handleGenerar("cv")}
+            disabled={generando !== null}
+            className="gap-1.5"
+          >
+            <FileText className="size-3.5" aria-hidden="true" />
+            {generando === "cv" ? "Generando…" : "Generar CV"}
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => void handleGenerar("carta")}
+            disabled={generando !== null}
+            className="gap-1.5"
+          >
+            <Mail className="size-3.5" aria-hidden="true" />
+            {generando === "carta" ? "Generando…" : "Generar carta"}
+          </Button>
+        </div>
       </CardContent>
     </Card>
   );
