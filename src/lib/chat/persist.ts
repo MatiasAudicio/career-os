@@ -2,7 +2,6 @@
 
 import type { UIMessage } from "ai";
 
-import type { AgentId } from "@/lib/agents";
 import { createClient } from "@/lib/supabase/client";
 
 type SesionChat = {
@@ -12,7 +11,10 @@ type SesionChat = {
 
 // Reutiliza la última sesión de este agente si existe, o crea una nueva.
 // Todo pasa por RLS: el usuario solo puede leer/escribir sus propias filas.
-export async function getOrCreateSession(agentId: AgentId): Promise<SesionChat> {
+// agentId acepta cualquier string (no solo AgentId) porque la sesión de
+// onboarding también pasa por acá con "onboarding" — la columna `agente` en
+// Supabase es texto libre, sin constraint.
+export async function getOrCreateSession(agentId: string): Promise<SesionChat> {
   const supabase = createClient();
   const {
     data: { user },
