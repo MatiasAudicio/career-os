@@ -14,6 +14,7 @@ declare global {
 
   interface SpeechRecognitionEvent extends Event {
     results: ArrayLike<SpeechRecognitionResultEntry>;
+    resultIndex: number;
   }
 
   interface SpeechRecognitionErrorEvent extends Event {

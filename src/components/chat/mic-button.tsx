@@ -51,14 +51,20 @@ export function MicButton({ onResult, disabled }: Props) {
 
     const recognition = new Ctor();
     recognition.lang = "es-AR";
-    recognition.continuous = false;
+    // continuous=true: sigue escuchando a través de pausas cortas — el
+    // usuario corta con el botón, no el navegador ante el primer silencio.
+    recognition.continuous = true;
     recognition.interimResults = false;
 
     recognition.onresult = (event) => {
-      const texto = event.results[0]?.[0]?.transcript ?? "";
-      if (texto) {
-        resultadoRecibidoRef.current = true;
-        onResult(texto);
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const resultado = event.results[i];
+        if (!resultado.isFinal) continue;
+        const texto = resultado[0]?.transcript ?? "";
+        if (texto) {
+          resultadoRecibidoRef.current = true;
+          onResult(texto);
+        }
       }
     };
     recognition.onerror = (event) => {
