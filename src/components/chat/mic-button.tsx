@@ -12,22 +12,38 @@ type Props = {
   disabled?: boolean;
 };
 
-const MENSAJE_POR_ERROR: Record<string, string> = {
-  "not-allowed":
-    "No tenemos permiso para usar tu micrófono. Habilitalo en los permisos del sitio (el ícono de candado al lado de la URL) y probá de nuevo.",
-  "audio-capture":
-    "No encontramos ningún micrófono conectado. Revisá que esté enchufado y habilitado.",
-  "no-speech": "No te escuchamos decir nada. Probá de nuevo, más cerca del micrófono.",
-  network: "Falló la conexión con el servicio de dictado. Probá de nuevo en un momento.",
-  aborted: "",
-};
+const SUGERENCIA_NAVEGADOR =
+  "El dictado por voz funciona mejor en Google Chrome — otros navegadores basados en Chromium (Opera, Brave, Vivaldi) no incluyen el motor de reconocimiento de Google y suelen fallar en silencio.";
+
+function mensajeDeError(codigo: string): string {
+  switch (codigo) {
+    case "not-allowed":
+    case "permission-denied":
+      return "No tenemos permiso para usar tu micrófono. Habilitalo en los permisos del sitio (el ícono de candado al lado de la URL) y probá de nuevo.";
+    case "audio-capture":
+      return "No encontramos ningún micrófono conectado. Revisá que esté enchufado y habilitado.";
+    case "no-speech":
+      return "No te escuchamos decir nada. Probá de nuevo, más cerca del micrófono.";
+    case "network":
+    case "service-not-allowed":
+      return `Falló la conexión con el servicio de dictado. ${SUGERENCIA_NAVEGADOR}`;
+    case "aborted":
+      return "";
+    default:
+      return `No se pudo completar el dictado (${codigo}). ${SUGERENCIA_NAVEGADOR}`;
+  }
+}
 
 // Dictado por voz con la Web Speech API — nativa del navegador, sin costo.
-// Solo Chrome/Edge la soportan hoy; en el resto el botón simplemente no aparece.
+// Solo Chrome/Edge la soportan de verdad hoy; en el resto el botón aparece
+// (la API existe) pero puede fallar en silencio, así que detectamos también
+// el caso "terminó sin transcribir nada y sin tirar error".
 export function MicButton({ onResult, disabled }: Props) {
   const [escuchando, setEscuchando] = useState(false);
   const [soportado, setSoportado] = useState(false);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
+  const resultadoRecibidoRef = useRef(false);
+  const errorMostradoRef = useRef(false);
 
   useEffect(() => {
     const Ctor = window.SpeechRecognition ?? window.webkitSpeechRecognition;
@@ -40,13 +56,23 @@ export function MicButton({ onResult, disabled }: Props) {
 
     recognition.onresult = (event) => {
       const texto = event.results[0]?.[0]?.transcript ?? "";
-      if (texto) onResult(texto);
+      if (texto) {
+        resultadoRecibidoRef.current = true;
+        onResult(texto);
+      }
     };
-    recognition.onend = () => setEscuchando(false);
     recognition.onerror = (event) => {
+      const mensaje = mensajeDeError(event.error);
+      if (mensaje) {
+        toast.error(mensaje);
+        errorMostradoRef.current = true;
+      }
+    };
+    recognition.onend = () => {
       setEscuchando(false);
-      const mensaje = MENSAJE_POR_ERROR[event.error];
-      if (mensaje) toast.error(mensaje);
+      if (!resultadoRecibidoRef.current && !errorMostradoRef.current) {
+        toast.warning(`No se transcribió nada. ${SUGERENCIA_NAVEGADOR}`);
+      }
     };
 
     recognitionRef.current = recognition;
@@ -77,6 +103,9 @@ export function MicButton({ onResult, disabled }: Props) {
       );
       return;
     }
+
+    resultadoRecibidoRef.current = false;
+    errorMostradoRef.current = false;
 
     try {
       recognitionRef.current.start();
