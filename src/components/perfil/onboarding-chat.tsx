@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import { Loader2, Send, Sparkles } from "lucide-react";
@@ -9,48 +10,18 @@ import { ConfigRequerida } from "@/components/chat/config-requerida";
 import { MicButton } from "@/components/chat/mic-button";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
-import { listAgents, type AgentId } from "@/lib/agents";
 import { loadAiConfig } from "@/lib/ai/config-storage";
 import { getOrCreateSession, saveMessage } from "@/lib/chat/persist";
 import { cn } from "@/lib/utils";
 
-const AGENTES = listAgents();
-
-export function ChatView() {
-  const [agentId, setAgentId] = useState<AgentId>(AGENTES[0].id);
-
-  return (
-    <div className="flex h-[calc(100dvh-9rem)] flex-col gap-4 lg:h-[calc(100dvh-5rem)]">
-      <div>
-        <h1 className="text-3xl font-semibold tracking-tight">Chat</h1>
-        <p className="mt-1 text-base text-muted-foreground">
-          Elegí con quién del equipo querés hablar.
-        </p>
-      </div>
-
-      <Tabs value={agentId} onValueChange={(v) => setAgentId(v as AgentId)}>
-        <TabsList className="h-auto flex-wrap justify-start gap-1 bg-transparent p-0">
-          {AGENTES.map((agente) => (
-            <TabsTrigger
-              key={agente.id}
-              value={agente.id}
-              className="rounded-full border border-border px-3 py-1.5 text-sm data-[selected]:border-primary/30 data-[selected]:bg-accent data-[selected]:text-accent-foreground"
-            >
-              {agente.nombre}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-      </Tabs>
-
-      <ChatConversation key={agentId} agentId={agentId} />
-    </div>
-  );
-}
-
-function ChatConversation({ agentId }: { agentId: AgentId }) {
-  const agente = AGENTES.find((a) => a.id === agentId) ?? AGENTES[0];
+// Chat de onboarding: mismo molde que ChatConversation (src/components/chat/
+// chat-view.tsx) pero apunta a /api/onboarding y no tiene selector de agente.
+// Cada vez que el asistente termina de responder, refresca la página para
+// que las secciones de perfil (debajo, en perfil-view.tsx) muestren los
+// datos recién guardados por las tools sin que el usuario recargue a mano.
+export function OnboardingChat() {
+  const router = useRouter();
   const [input, setInput] = useState("");
   const [sessionId, setSessionId] = useState("");
   const [cargando, setCargando] = useState(true);
@@ -59,11 +30,10 @@ function ChatConversation({ agentId }: { agentId: AgentId }) {
 
   const { messages, sendMessage, status, setMessages, error } = useChat({
     transport: new DefaultChatTransport({
-      api: "/api/chat",
+      api: "/api/onboarding",
       body: () => {
         const config = loadAiConfig();
         return {
-          agentId,
           provider: config?.provider,
           apiKey: config?.apiKey,
           model: config?.model,
@@ -76,6 +46,7 @@ function ChatConversation({ agentId }: { agentId: AgentId }) {
         .map((parte) => parte.text)
         .join("");
       if (texto) void saveMessage(sessionId, "assistant", texto);
+      router.refresh();
     },
   });
 
@@ -86,9 +57,7 @@ function ChatConversation({ agentId }: { agentId: AgentId }) {
 
   useEffect(() => {
     let cancelado = false;
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- arranca la carga async de la sesion al cambiar de agente
-    setCargando(true);
-    getOrCreateSession(agentId).then(({ sessionId: id, initialMessages }) => {
+    getOrCreateSession("onboarding").then(({ sessionId: id, initialMessages }) => {
       if (cancelado) return;
       setSessionId(id);
       setMessages(initialMessages);
@@ -97,7 +66,7 @@ function ChatConversation({ agentId }: { agentId: AgentId }) {
     return () => {
       cancelado = true;
     };
-  }, [agentId, setMessages]);
+  }, [setMessages]);
 
   useEffect(() => {
     scrollAnchorRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -119,7 +88,7 @@ function ChatConversation({ agentId }: { agentId: AgentId }) {
   }
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border">
+    <div className="flex h-[28rem] min-h-0 flex-col overflow-hidden rounded-xl border">
       <ScrollArea className="min-h-0 flex-1 px-4 py-4">
         {cargando ? (
           <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
@@ -131,7 +100,8 @@ function ChatConversation({ agentId }: { agentId: AgentId }) {
               <Sparkles className="size-5 text-primary" aria-hidden="true" />
             </span>
             <p className="max-w-sm text-sm text-muted-foreground">
-              {agente.descripcion} Escribí o dictá tu primer mensaje.
+              Contame quién sos y qué estás buscando — escribí o dictá tu
+              primer mensaje.
             </p>
           </div>
         ) : (
@@ -153,9 +123,7 @@ function ChatConversation({ agentId }: { agentId: AgentId }) {
                   )}
                 >
                   {mensaje.parts.map((parte, i) =>
-                    parte.type === "text" ? (
-                      <span key={i}>{parte.text}</span>
-                    ) : null,
+                    parte.type === "text" ? <span key={i}>{parte.text}</span> : null,
                   )}
                 </div>
               </div>
@@ -191,7 +159,7 @@ function ChatConversation({ agentId }: { agentId: AgentId }) {
               handleSubmit(e);
             }
           }}
-          placeholder={`Escribile a ${agente.nombre.toLowerCase()}…`}
+          placeholder="Escribí o dictá tu respuesta…"
           rows={1}
           className="max-h-32 min-h-11 flex-1 resize-none text-base"
         />
