@@ -25,6 +25,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Meter } from "@/components/ui/meter";
 import { Textarea } from "@/components/ui/textarea";
 import { PipelineStrip } from "@/components/vacantes/pipeline-strip";
 import { loadAiConfig } from "@/lib/ai/config-storage";
@@ -43,6 +44,8 @@ export type Vacante = {
   estado: Estado;
   decision: Decision | null;
   match_pct: number | null;
+  probabilidad_entrevista: number | null;
+  probabilidad_oferta: number | null;
   match_justificacion: string | null;
   fecha_aplicacion: string | null;
 };
@@ -58,13 +61,6 @@ const DECISION_VARIANTE: Record<Decision, "success" | "warning" | "outline"> = {
   despues: "warning",
   ignorar: "outline",
 };
-
-function varianteMatch(pct: number | null): "success" | "warning" | "destructive" | "outline" {
-  if (pct === null) return "outline";
-  if (pct >= 70) return "success";
-  if (pct >= 40) return "warning";
-  return "destructive";
-}
 
 type FormVacante = {
   empresa: string;
@@ -323,17 +319,24 @@ function VacanteCard({
               {vacante.fuente ? ` · ${vacante.fuente}` : ""}
             </p>
           </div>
-          <div className="flex flex-wrap items-center gap-1.5">
-            {vacante.match_pct !== null && (
-              <Badge variant={varianteMatch(vacante.match_pct)}>{vacante.match_pct}% match</Badge>
+          {vacante.decision && (
+            <Badge variant={DECISION_VARIANTE[vacante.decision]}>
+              {DECISION_LABEL[vacante.decision]}
+            </Badge>
+          )}
+        </div>
+
+        {vacante.match_pct !== null && (
+          <div className="space-y-1">
+            <Meter label="Match" value={vacante.match_pct} />
+            {vacante.probabilidad_entrevista !== null && (
+              <Meter label="Prob. de entrevista" value={vacante.probabilidad_entrevista} />
             )}
-            {vacante.decision && (
-              <Badge variant={DECISION_VARIANTE[vacante.decision]}>
-                {DECISION_LABEL[vacante.decision]}
-              </Badge>
+            {vacante.probabilidad_oferta !== null && (
+              <Meter label="Prob. de oferta" value={vacante.probabilidad_oferta} />
             )}
           </div>
-        </div>
+        )}
 
         <div className="flex flex-wrap items-center gap-3">
           <Select value={vacante.estado} onValueChange={(v) => onCambiarEstado(v as Estado)}>
