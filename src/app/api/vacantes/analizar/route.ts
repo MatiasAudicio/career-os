@@ -89,6 +89,8 @@ export async function POST(req: Request) {
       descripcion: descripcion.trim(),
       decision: analisis.decision,
       match_pct: analisis.match_pct,
+      probabilidad_entrevista: analisis.probabilidad_entrevista,
+      probabilidad_oferta: analisis.probabilidad_oferta,
       match_justificacion: formatearJustificacion(analisis),
     })
     .select("*")

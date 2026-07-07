@@ -2,6 +2,8 @@ import { z } from "zod";
 
 export const AnalisisVacanteSchema = z.object({
   match_pct: z.number().min(0).max(100),
+  probabilidad_entrevista: z.number().min(0).max(100),
+  probabilidad_oferta: z.number().min(0).max(100),
   decision: z.enum(["aplicar", "despues", "ignorar"]),
   resumen: z.string(),
   skills_faltantes_descalificantes: z.array(z.string()),
@@ -15,8 +17,10 @@ export type AnalisisVacante = z.infer<typeof AnalisisVacanteSchema>;
 // index.ts) para no reinventar el criterio de match honesto en dos lugares.
 const REGLAS_ANALISIS = `Reglas del análisis:
 - Match % honesto: no infles ni castigues de más. Los requisitos de vacantes junior suelen estar inflados — con 50-60% de match real, la decisión default es "aplicar".
+- Probabilidad de entrevista: estimá qué tan probable es que este perfil concreto pase el primer filtro y llegue a una entrevista para esta vacante puntual.
+- Probabilidad de oferta: estimá qué tan probable es, si llega a entrevista, terminar con una oferta — es más especulativa que las anteriores (depende de más variables fuera del control del candidato), decilo con esa misma honestidad en vez de fingir precisión.
 - Separá "skills faltantes descalificantes" (las que de verdad frenarían al candidato) de "nice to have que se puede ignorar" (deseables pero no bloqueantes).
-- Nunca inventes experiencia que el perfil no tiene para inflar el match.
+- Nunca inventes experiencia que el perfil no tiene para inflar ningún número.
 - Terminá siempre con una decisión clara: aplicar / despues / ignorar.`;
 
 export function construirPromptAnalisis(

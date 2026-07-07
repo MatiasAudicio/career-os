@@ -30,6 +30,18 @@ export function contarPorEstado(vacantes: { estado: Estado }[]): Record<Estado, 
   return conteo;
 }
 
+// Mismo umbral que usa cualquier % de probabilidad de esta app (match,
+// entrevista, oferta): ≥70 verde, 40-69 amarillo, <40 rojo. Un solo lugar
+// para no repetir el criterio en cada componente que dibuja un porcentaje.
+export function varianteProbabilidad(
+  pct: number | null,
+): "success" | "warning" | "destructive" | "outline" {
+  if (pct === null) return "outline";
+  if (pct >= 70) return "success";
+  if (pct >= 40) return "warning";
+  return "destructive";
+}
+
 // Para el nudge anti-trampa del dashboard "Hoy". fechaMasReciente es la
 // fecha_aplicacion más reciente entre las vacantes del usuario (null si
 // nunca aplicó todavía).

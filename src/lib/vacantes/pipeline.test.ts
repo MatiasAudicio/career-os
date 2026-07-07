@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { contarPorEstado, diasDesdeUltimaAplicacion } from "./pipeline";
+import { contarPorEstado, diasDesdeUltimaAplicacion, varianteProbabilidad } from "./pipeline";
 
 describe("contarPorEstado", () => {
   it("cuenta cada estado y deja en 0 los que no tienen ninguna vacante", () => {
@@ -40,5 +40,26 @@ describe("diasDesdeUltimaAplicacion", () => {
   it("cuenta los días completos transcurridos", () => {
     const hoy = new Date("2026-07-07T15:00:00Z");
     expect(diasDesdeUltimaAplicacion("2026-07-01", hoy)).toBe(6);
+  });
+});
+
+describe("varianteProbabilidad", () => {
+  it("devuelve outline cuando no hay valor", () => {
+    expect(varianteProbabilidad(null)).toBe("outline");
+  });
+
+  it("devuelve success a partir de 70", () => {
+    expect(varianteProbabilidad(70)).toBe("success");
+    expect(varianteProbabilidad(100)).toBe("success");
+  });
+
+  it("devuelve warning entre 40 y 69", () => {
+    expect(varianteProbabilidad(40)).toBe("warning");
+    expect(varianteProbabilidad(69)).toBe("warning");
+  });
+
+  it("devuelve destructive por debajo de 40", () => {
+    expect(varianteProbabilidad(0)).toBe("destructive");
+    expect(varianteProbabilidad(39)).toBe("destructive");
   });
 });
