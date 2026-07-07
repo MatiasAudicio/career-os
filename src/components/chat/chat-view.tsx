@@ -100,7 +100,10 @@ function ChatConversation({ agentId }: { agentId: AgentId }) {
   }, [agentId, setMessages]);
 
   useEffect(() => {
-    scrollAnchorRef.current?.scrollIntoView({ behavior: "smooth" });
+    // block: "nearest" evita que scrollIntoView intente centrar el ancla en
+    // toda la ventana (default: block: "center"), que arrastraría la página
+    // en layouts donde el chat no ocupa toda la altura del viewport.
+    scrollAnchorRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }, [messages]);
 
   const enviando = status === "submitted" || status === "streaming";

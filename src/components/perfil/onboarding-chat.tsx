@@ -69,7 +69,11 @@ export function OnboardingChat() {
   }, [setMessages]);
 
   useEffect(() => {
-    scrollAnchorRef.current?.scrollIntoView({ behavior: "smooth" });
+    // block: "nearest" evita que scrollIntoView intente centrar el ancla en
+    // toda la ventana (su default es block: "center") — acá el chat vive
+    // dentro de una página larga (perfil-view.tsx tiene más secciones debajo),
+    // así que sin esto arrastraba la página entera en vez de solo el chat.
+    scrollAnchorRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }, [messages]);
 
   const enviando = status === "submitted" || status === "streaming";
